@@ -1,0 +1,89 @@
+--build
+
+docker build --rm -t airflow .
+
+--compose
+
+docker-compose -f docker-compose-CeleryExecutor.yml up -d --scale worker=2
+
+docker-compose -f docker-compose-CeleryExecutor.yml down -v
+
+--container
+
+docker container stop dockerairflow_redis_1
+
+docker container stop dockerairflow_postgres_1
+
+docker container rm dockerairflow_postgres_1
+
+docker container rm dockerairflow_redis_1
+
+--run
+
+docker run -d -p 8083:8080 airflow-image webserver
+
+
+
+docker build --rm -t airflow-image .
+docker build --build-arg PYTHON_DEPS="psycopg2-binary" --rm -t airflow-image .
+
+docker build --build-arg PYTHON_DEPS="psycopg2-binary redis>=3.2.0" --rm -t airflow-image .
+docker build --build-arg PYTHON_DEPS="psycopg2-binary redis==2.10.6" --rm -t airflow-image .
+
+
+docker exec -it --user root dockerairflow_webserver_1 bash
+
+airflow list_dags
+
+--ECR
+
+docker image ls
+
+cd /home/brunosouza/Documents/apache/airflow/docker-airflow
+docker build --rm -t airflow:latest .
+docker login
+
+--Criei o repo ariflow no ECR
+
+docker tag airflow:latest 644153193116.dkr.ecr.us-east-1.amazonaws.com/airflow:latest
+docker image ls
+
+--get the token
+
+aws-vault exec creditas-dev -- aws ecr get-login --region us-east-1 --no-include-email
+
+--login on ECR
+
+docker login -u AWS -p eyJwYXlsb2FkIjoiMEM2MGJMcnJtbHJ1UjAzYWE0YzgrenZkT056ODRyQ2txRWFtdFJVbmNRWWw1cEcvUWk3U3dDMWZhUEtOMWwxdHR3bjlWWnV5am5nbXk0ZVhQT3h2ckpXaTU5ZDN6dGxJVSsyK1hNU1dSbUYvRWtpenhjbjI3MHd5V2Ywd2NLWFp1V1dUVXZ5NmVXZXNnRlg3TEp5NTdMTWsrMmtSNVgrcmcyMlhYaVZYVWdOZ3doaVJWQ0M4L1pxTmpBdjhGbnNSNjJGVFhTdmg4cXhZOGVDRjRqUGs4MEVtU2gvaWMyVWxQS0U2WFdmaTd4UFYwMzJIRWppZFNnYWYyTlhwQy90MjdJbTR5cGpQL3dWOG1vTWMwek5FT3A5aVZJQTJxczVHSnRrR3FnYi9OekVyZHM4Tzd2S0Z0ZXZyRXV1M0plUEc4N2VjS0Y2c09ubnFnbXg0TEQ0QXJYcW8vSlV6U2VQV1kyRmRnWFp6N0FVS09hU0tVeksrdWorOXhpRW9NelNESlNlOUlyNG44V3dBcXFrL0U2b1ZkZjg5REl1NkVCZTQxMUVxM2NxUUdQeFBkTEF4SGxFeStCOVBvWjIweGYwVHhHOUJKNUVMNmpFYkNXS0JpRkJxOUxQMGhYcU5wYkJuaTl0bFhSa0o3bVdKbUxUZjlUaG4rMWFhN2hGeWVRVTNvZmU0WEdHOXdvMWtJOTRVTEdxSCtuQlVsTHBGRnN3ZVY1aHdabkZpeU1kSEVtU1c4Uy9rWFRJL1phUXJrUm01RzVvNGZjTjQ3cGt2UDhBeEx2ZDR5TUNuR3JWaVNvTVd1Z2xqR2dJZE9ZTG40dVBpcklMcWdtdUNhNHFUaHRuUldSTnVUcCs2SVBlRjJ2ZkFxZ0RvdlZ5Y04yZW5HNmg4bzhPVy9BN0paZWhnaG1rVDJxTzdURUZNeUprZXpvNUwwdXJHK29oTXA1Qzk3Tk05UisxZlpYNEdzRjExZkNLVm1CN0ZtclU3TEQ2QjUxSzlLRlpjSUVsQUw3aTVMclJ4dGY0ZHMwNGJvam1FajdYY0czc2k1TTFrc2xNeWt6Yk5VR2lCY25mc0xvb2RzTE1sWHUyRGZlaUYxRHQ3MFhuaW9yMmxjMHNnaFZpQVhqd3hBOG8zdXZmQ2x1S0VRYlNkclJVVWtuMmhVbzZMMWNoa2J6djJsQ21OT2ZYWEpYOVZ0SVZqcS9WMFgxNHV4ZWVQcC9zNnN4ZDJxbXBDWU0xaTRzQlQ3L1BRVmdOLzNxeC91bnA1QnVWd1RrSFFFVmtQYmNBNXdvZEp4ZFNReXVmTHArckFrRmFyMzkwMzM4alo3ZlZjMzZoM2N2QXV5REI3bkZ2YWRaQXl6YVhoUUZxRDU3dWhsVndhMDZYc1VTeExPOGY2OUIyVEpDSjlWQTdhOXdVSWFWTERTa05YQXRLRmQ1dnBpengwZFc2WGxlSjhXemt0MCsrNzhobit6OUVKbVVPdzdsSWh4S3lQQXgwdEN5MHo2MnpGclJwSnk4clBieDRYL1F4OENPT2U3YVlvQ1ZIWUFCQ2UrNWxtSTZFMUJOU29ScCtYK0dOWllQRWtDTkdDQlR0OUxQS1VHeFNNTyttYzdZdXNuUXFBWmNTSytlMFBDQXBTVCtWK3hlWS8rdTdPWGdWUzVnc3RDR2kvTk9VZkQvK2J3Z3gwQ2FFY0pOZFpVT3JCbzFad1BlbG5vdGo3bmFtQTZwSG1FMkIwK2tCT0VSUk9oZVhEVE1WZjFYcHFhWFp3TS9OY3RKcHVPbG1KTVFBZ2pVNU5vbVNxWjZHN2FYNDY2dnJrWHRGMm9qdVNNTVY3WGZsWUxvQ3NlWlNydVJCREhsVDVIeW9FODBqdHpxbFhTZlFtcW1sQ3I4M3BZdXhscTRUTTJDS1d2aWo5Wjh2dVVLa2k4SWkyZ3FvPSIsImRhdGFrZXkiOiJBUUVCQUhod20wWWFJU0plUnRKbTVuMUc2dXFlZWtYdW9YWFBlNVVGY2U5UnE4LzE0d0FBQUg0d2ZBWUpLb1pJaHZjTkFRY0dvRzh3YlFJQkFEQm9CZ2txaGtpRzl3MEJCd0V3SGdZSllJWklBV1VEQkFFdU1CRUVEQjJzVHRKcTlhdHN4NG1mWXdJQkVJQTd3MFBHUE9VOHlnM1BGNzl6WU85VFcwMktuU2FjL09LVWhuL1dQNCtiT2FqMWNCdmxoaDJ1MlVDMjM2ckhjdTVLOEUvZ2pOZ2NOY2Z5OGVnPSIsInZlcnNpb24iOiIyIiwidHlwZSI6IkRBVEFfS0VZIiwiZXhwaXJhdGlvbiI6MTU5ODYxODAzMX0= https://644153193116.dkr.ecr.us-east-1.amazonaws.com
+
+--push
+
+docker push 644153193116.dkr.ecr.us-east-1.amazonaws.com/airflow:latest
+
+--postgres rds
+
+airflow.cgdai1b1yreu.us-east-1.rds.amazonaws.com
+airflow
+airflow 
+airflow123
+
+--redis
+
+airflow.rgyx4l.0001.use1.cache.amazonaws.com
+
+--install redis cli
+
+apt-get install redis-tools
+
+redis-cli -h airflow.rgyx4l.0001.use1.cache.amazonaws.com
+
+--dag_bag
+
+--host
+
+/home/ec2-user/dags
+
+--airflow
+
+/usr/local/airflow/dags
+
