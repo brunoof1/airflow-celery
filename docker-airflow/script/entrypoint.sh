@@ -2,14 +2,14 @@
 
 TRY_LOOP="20"
 
-: "${REDIS_HOST:="airflow.rgyx4l.0001.use1.cache.amazonaws.com"}"
+: "${REDIS_HOST:="airflow.xxx.amazonaws.com"}"
 : "${REDIS_PORT:="6379"}"
 : "${REDIS_PASSWORD:=""}"
 
-: "${POSTGRES_HOST:="airflow.cgdai1b1yreu.us-east-1.rds.amazonaws.com"}"
+: "${POSTGRES_HOST:="airflow.xxx.amazonaws.com"}"
 : "${POSTGRES_PORT:="5432"}"
 : "${POSTGRES_USER:="airflow"}"
-: "${POSTGRES_PASSWORD:="airflow123"}"
+: "${POSTGRES_PASSWORD:="airflow"}"
 : "${POSTGRES_DB:="airflow"}"
 
 # Defaults and back-compat
